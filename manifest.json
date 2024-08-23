@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Kenyan Law Search",
+    "name": "Kenyan constitution search",
     "version": "1.0",
-    "description": "Search Kenyan law and receive daily constitutional updates.",
+    "description": "Search Kenyan constitution and receive daily constitutional updates.",
     "permissions": ["storage", "notifications"],
     "background": {
       "service_worker": "background.js"
