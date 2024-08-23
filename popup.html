@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="popup.js" defer></script>
+    <title>Kenyan Constitution Search</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 400px;
+        }
+
+        h1 {
+            font-size: 18px;
+        }
+
+        #results {
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Kenyan Law Search</h1>
+    <input type="text" id="searchQuery" placeholder="Enter search term...">
+    <button id="searchButton">Search</button>
+    <button id="googleButton">Google</button>
+    <div id="results"></div>
+    <div id="loadingDiv" style="display:none;">Loading...</div>
+    
+</body>
+
+</html>
