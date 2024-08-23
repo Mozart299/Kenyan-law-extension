@@ -1,6 +1,6 @@
 import { pdfjsLib } from './pdf-loader.js';
 
-const pdfUrl = 'Kenya Law.pdf'; // Replace with the actual PDF file URL
+const pdfUrl = 'TheConstitutionOfKenya.pdf'; 
 
 async function loadPdf() {
     const loadingTask = pdfjsLib.getDocument(pdfUrl);
