@@ -67,7 +67,7 @@ function searchConstitution(term, text, pageStarts) {
 document.getElementById('results').addEventListener('click', function(event) {
     if (event.target.tagName === 'A' && event.target.dataset.page) {
         event.preventDefault();
-        const page = event.target.dataset.page;
+        const page = parseInt(event.target.dataset.page, 10); 
         const searchTerm = event.target.dataset.term;
         openPdfAtPage(page, searchTerm);
     }
