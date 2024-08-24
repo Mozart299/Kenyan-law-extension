@@ -5,19 +5,21 @@ const pdfUrl = 'TheConstitutionOfKenya.pdf';
 async function loadPdf() {
     const loadingTask = pdfjsLib.getDocument(pdfUrl);
     const pdf = await loadingTask.promise;
-    const textContent = await extractTextFromPdf(pdf);
-    return textContent;
+    const { text, pageStarts } = await extractTextFromPdf(pdf);
+    return { text, pageStarts };
 }
 
 async function extractTextFromPdf(pdf) {
     let text = '';
+    let pageStarts = [0];
     for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
         const pageText = content.items.map(item => item.str).join(' ');
         text += pageText + '\n';
+        pageStarts.push(text.length);
     }
-    return text;
+    return { text, pageStarts };
 }
 
 document.getElementById('searchButton').addEventListener('click', async function() {
@@ -25,8 +27,8 @@ document.getElementById('searchButton').addEventListener('click', async function
     if (searchTerm) {
         try {
             document.getElementById('loadingDiv').style.display = 'block';
-            const constitutionText = await loadPdf();
-            const results = searchConstitution(searchTerm, constitutionText);
+            const { text, pageStarts } = await loadPdf();
+            const results = searchConstitution(searchTerm, text, pageStarts);
             displayResults(results, searchTerm);
         } catch (error) {
             console.error('Error during search:', error);
@@ -40,23 +42,21 @@ document.getElementById('searchButton').addEventListener('click', async function
 });
 
 
-
-
-function searchConstitution(term, text) {
-    const sentenceRegex = /[^.!?]*[.!?]/g; // Regular expression to match sentences
+function searchConstitution(term, text, pageStarts) {
+    const sentenceRegex = /[^.!?]*[.!?]/g;
     const matches = [];
     let match;
 
-    // Loop through all sentences in the text
     while ((match = sentenceRegex.exec(text)) !== null) {
         const sentence = match[0];
-        const searchTermRegex = new RegExp(term, 'i'); // Regular expression for the search term
+        const searchTermRegex = new RegExp(term, 'i');
 
-        // Check if the sentence contains the search term
         if (searchTermRegex.test(sentence)) {
+            const pageNumber = pageStarts.findIndex(start => start > match.index) - 1;
             matches.push({
-                sentence: sentence.trim(),  // Trim any leading/trailing whitespace
-                index: match.index           // Store the position of the sentence in the text
+                sentence: sentence.trim(),
+                index: match.index,
+                page: pageNumber
             });
         }
     }
@@ -64,9 +64,18 @@ function searchConstitution(term, text) {
 }
 
 
+document.getElementById('results').addEventListener('click', function(event) {
+    if (event.target.tagName === 'A' && event.target.dataset.page) {
+        event.preventDefault();
+        const page = event.target.dataset.page;
+        const searchTerm = event.target.dataset.term;
+        openPdfAtPage(page, searchTerm);
+    }
+});
+
 function displayResults(results, searchTerm) {
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = ''; // Clear previous results
+    resultsDiv.innerHTML = '';
 
     if (results.length === 0) {
         resultsDiv.innerText = 'No results found.';
@@ -76,8 +85,14 @@ function displayResults(results, searchTerm) {
     results.forEach(result => {
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
-        resultItem.innerHTML = `<p>${result.sentence.replace(new RegExp(searchTerm, 'gi'), '<strong>$&</strong>')}</p>
-                                <small>Found at position: ${result.index}</small>`;
+        const highlightedSentence = result.sentence.replace(new RegExp(searchTerm, 'gi'), '<strong>$&</strong>');
+        resultItem.innerHTML = `
+            <p>${highlightedSentence}</p>
+            <small>
+                Found on page ${result.page + 1} at position: ${result.index}
+                <a href="#" data-page="${result.page}" data-term="${searchTerm}">View in PDF</a>
+            </small>
+        `;
         resultsDiv.appendChild(resultItem);
     });
 }
@@ -92,3 +107,9 @@ document.getElementById('googleButton').addEventListener('click', function() {
         alert('Please enter a search term.');
     }
 });
+
+function openPdfAtPage(pageNumber) {
+    const pdfUrl = 'TheConstitutionOfKenya.pdf';
+    const pdfWithPage = `${pdfUrl}#page=${pageNumber + 1}`;
+    window.open(pdfWithPage, '_blank');
+}
