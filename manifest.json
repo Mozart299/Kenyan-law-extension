@@ -10,12 +10,12 @@
     "action": {
       "default_popup": "popup.html",
       "default_icon": {
-        "48": "kenyan-icon.png",
-        "128": "kenyan-icon-128.png"
+        "48": "assets/kenya-icon.png",
+        "128": "assets/kenya-icon-128.png"
       }
     },
     "icons": {
-      "48": "kenyan-icon.png",
-      "128": "kenyan-icon-128.png"
+      "48": "assets/kenya-icon.png",
+      "128": "assets/kenya-icon-128.png"
     }
   }

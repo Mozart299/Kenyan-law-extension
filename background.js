@@ -3,7 +3,7 @@ console.log('background.js is running');
 function sendNotification() {
     chrome.notifications.create({
         type: 'basic',
-        iconUrl: '48.png',
+        iconUrl: 'assets/kenya-icon.png',
         title: 'Daily Kenyan Law Update',
         message: 'Check the latest updates on the Kenyan constitution!',
         priority: 2
